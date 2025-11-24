@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
-from fastapi import FastAPI
+
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
@@ -27,21 +27,22 @@ class Auto(Base):
     available = Column(Boolean, default=True)
     created_data = Column(DateTime, default=func.now())
 
-    sales = relationship("Sold", back_populates="car")
+    sales = relationship("Sale", back_populates="car")
 
-class Sold(Base):
-    __tablename__ = "SoldCar"
+class Sale(Base):
+    __tablename__ = "sales"
 
-    id = Column(Integer, primary_key=True, index=True)
-    car_id = Column(Integer, nullable=False, index=True)
+    id = Column(Integer, primary_key=True)
+    car_id = Column(Integer, ForeignKey('cars.id'))
     brand = Column(String, index=True, nullable=False)
     model = Column(String, index=True, nullable=False)
     year = Column(Integer, nullable=False)
     color = Column(String, nullable=False)
-    sale_price = Column(String, nullable=False)
+    sale_price = Column(Float, nullable=False)
     customer_phone = Column(String, nullable=False)
     customer_name = Column(String, nullable=False)
-    sale_data = Column(DateTime, default=func.now())
+    sale_date = Column(DateTime, default=func.now())
     created_at = Column(DateTime, default=func.now())
+    car = relationship("Auto", back_populates="sales")
 
 SessionLocal = sessionmaker(autoflush=False, bind=engine)

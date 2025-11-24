@@ -4,6 +4,25 @@ from database import *
 from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
+from datetime import datetime
+
+
+class SaleCreate(BaseModel):
+    car_id : int
+    customer_name : str
+    customer_phone : str
+    sale_price : Optional[float] = None
+
+class SaleManager:
+    def __init__(self, db : Session):
+        self.db = db 
+        
+    def sell_car(self, sale_date : SaleCreate) -> Sale:
+        car = self.db.query(Auto).filter(Auto.id == sale_data.car_id).first()
+        if not car:
+            raise ValueError("Автомобиль не найден")
+        if not car.available:
+            raise ValueError("Автомобиль продан!")
 
 class CarCreate(BaseModel):
     brand : str
